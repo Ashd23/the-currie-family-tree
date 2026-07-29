@@ -3,8 +3,6 @@ const directLine = [
   "James Wiley Currie",
   "John Robert Currie",
   "Bobby Jean Currie",
-  "Christopher Leon Currie",
-  "Ashley Danielle Currie",
 ];
 
 let familyData;
@@ -56,6 +54,16 @@ The cemetery statement is therefore treated as a transcription or identification
 
 https://ancestors.familysearch.org/en/LK6Y-CS4/lucy-ann-currie-1857-1872
 https://ncgenweb.us/richmond/c_1.html`,
+    });
+  }
+  if (node.name.startsWith("Archibald Clayton Currie (1825-1877)")) {
+    notes.unshift({
+      title: "Available research evidence",
+      text: `The archive does not yet contain a downloaded original census image for Archibald and Lucy.
+
+The saved research links connect them to their children and point to census and cemetery material that supports this family group.
+
+These are research links rather than copies of original certificates. An original 1860 or 1870 census household image is still wanted for this couple.`,
     });
   }
   return notes;
@@ -111,9 +119,9 @@ function lineageTreeHtml() {
   ];
   return `<section class="family-showcase" aria-labelledby="lineage-title">
     <div class="section-heading">
-      <p class="eyebrow">Six generations</p>
-      <h2 id="lineage-title">Our family through the years</h2>
-      <p>Follow the direct Currie line from the earliest researched couple to the present generation.</p>
+      <p class="eyebrow">Shared family roots</p>
+      <h2 id="lineage-title">The Currie family through the years</h2>
+      <p>This shared family line ends with Bobby Jean and Shirley. Their six children's families branch together below.</p>
     </div>
     <div class="lineage-tree">${nodes
       .map(

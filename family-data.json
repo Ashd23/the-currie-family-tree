@@ -13,7 +13,18 @@
         "name": "Archibald Clayton Currie (1825-1877) and Lucy Caroline Scarbrough (1838-1922)",
         "path": "Archibald Clayton Currie (1825-1877) and Lucy Caroline Scarbrough (1838-1922)",
         "info": [],
-        "files": [],
+        "files": [
+          {
+            "name": "FamilySearch profile and census sources - Lucy Ann Currie, daughter of Archibald and Lucy",
+            "type": "source",
+            "url": "https://ancestors.familysearch.org/en/LK6Y-CS4/lucy-ann-currie-1857-1872"
+          },
+          {
+            "name": "Richmond County cemetery transcription and Currie family research",
+            "type": "source",
+            "url": "https://ncgenweb.us/richmond/c_1.html"
+          }
+        ],
         "children": [
           {
             "id": "family-3",
@@ -2010,7 +2021,7 @@
                         "info": [
                           {
                             "title": "Private Family Information",
-                        "text": "FAMILY INFORMATION\n\n- Lonnie does not have children.\n\nThis information was supplied directly by the family.\n"
+                            "text": "FAMILY INFORMATION\n\n- Lonnie does not have children.\n\nThis information was supplied directly by the family.\n"
                           }
                         ],
                         "files": [
