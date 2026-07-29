@@ -18,22 +18,57 @@ const cleanText = (text) => text
 const assetUrl = (url) => url.startsWith("/archive-assets/") ? url.split("/").pop() : url;
 const flatten = (node) => [node, ...node.children.flatMap(flatten)];
 const isDirect = (node) => directLine.some((name) => node.name.startsWith(name));
-const hasContent = (node) => node.info.length + node.files.length > 0;
+const isDocumentFolder = (node) => node.name.endsWith("Historical Documents");
+const visibleChildren = (node) => node.children.filter((child) => !isDocumentFolder(child));
+const associatedFiles = (node) => {
+  const files = [
+    ...node.files,
+    ...(node._documentFiles || []),
+    ...node.children.filter(isDocumentFolder).flatMap((child) => child.files),
+  ];
+  return files.filter((file, index) =>
+    files.findIndex((candidate) => candidate.name === file.name && candidate.url === file.url) === index
+  );
+};
+const researchNotes = (node) => {
+  const notes = [...node.info];
+  if (node.name.startsWith("James Wiley Currie (1855-1925)")) {
+    notes.unshift({
+      title: "Parents and evidence",
+      text: `James Wiley Currie was born 23 August 1855 and died 27 July 1925.
+
+The current family tree identifies Archibald Clayton Currie and Lucy Caroline Scarbrough as his parents. FamilySearch places James with their children and connects the family to the 1860 and 1870 United States censuses.
+
+A Richmond County cemetery transcription incorrectly describes James as a son of Archie M. Currie and Catherine Gibson. That statement is chronologically impossible: the same transcription dates Archie M. to 1867 and Catherine Gibson to 1871, twelve and sixteen years after James was born. It also lists their children in the later generation.
+
+The cemetery statement is therefore treated as a transcription or identification error. The original 1860 census household image is still wanted as the strongest final confirmation.
+
+https://ancestors.familysearch.org/en/LK6Y-CS4/lucy-ann-currie-1857-1872
+https://ncgenweb.us/richmond/c_1.html`,
+    });
+  }
+  return notes;
+};
+const hasContent = (node) => researchNotes(node).length + associatedFiles(node).length > 0;
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
 }[char]));
 
 function branchHtml(node, depth = 0) {
   const open = depth < 2 || isDirect(node);
+  const children = visibleChildren(node);
+  const files = associatedFiles(node);
+  node._documentFiles = files.filter((file) => !node.files.includes(file));
+  node.children = children;
   return `<li class="branch">
     <div class="branch-row ${selectedNode?.id === node.id ? "selected" : ""} ${isDirect(node) ? "direct" : ""}">
       ${node.children.length ? `<button class="toggle" data-toggle="${escapeHtml(node.id)}">${open ? "−" : "+"}</button>` : `<span class="toggle-spacer"></span>`}
       <button class="person-button" data-person="${escapeHtml(node.id)}">
         <span>${escapeHtml(node.name)}</span>
-        ${hasContent(node) ? `<small>${node.files.length ? `${node.files.length} record${node.files.length === 1 ? "" : "s"}` : "details"}</small>` : ""}
+        ${hasContent(node) ? `<small>${files.length ? `${files.length} record${files.length === 1 ? "" : "s"}` : "details"}</small>` : ""}
       </button>
     </div>
-    ${node.children.length ? `<ul data-children="${escapeHtml(node.id)}" ${open ? "" : "hidden"}>${node.children.map((child) => branchHtml(child, depth + 1)).join("")}</ul>` : ""}
+    ${children.length ? `<ul data-children="${escapeHtml(node.id)}" ${open ? "" : "hidden"}>${children.map((child) => branchHtml(child, depth + 1)).join("")}</ul>` : ""}
   </li>`;
 }
 
@@ -48,13 +83,15 @@ function noteHtml(note) {
 }
 
 function detailHtml(node) {
-  const images = node.files.filter((file) => file.type === "image");
-  const other = node.files.filter((file) => file.type !== "image");
+  const files = associatedFiles(node);
+  const notes = researchNotes(node);
+  const images = files.filter((file) => file.type === "image");
+  const other = files.filter((file) => file.type !== "image");
   return `<article class="detail-card">
     <div class="eyebrow">${isDirect(node) ? "Direct Currie line" : "Family branch"}</div>
     <h2>${escapeHtml(node.name)}</h2>
     ${node.path ? `<p class="relationship-path">${escapeHtml(node.path.split("\\").slice(-3, -1).join("  ›  "))}</p>` : ""}
-    ${node.info.map(noteHtml).join("")}
+    ${notes.map(noteHtml).join("")}
     ${images.length ? `<section><h3>Documents & photographs</h3><div class="document-grid">${
       images.map((file) => `<a class="document" href="${escapeHtml(assetUrl(file.url))}" target="_blank" rel="noreferrer">
         <img src="${escapeHtml(assetUrl(file.url))}" alt="${escapeHtml(file.name)}" loading="lazy">
@@ -66,7 +103,7 @@ function detailHtml(node) {
         <span><strong>${escapeHtml(file.name)}</strong><small>${file.type === "source" ? "Open original research source" : "Open document"}</small></span>
       </a>`).join("")
     }</div></section>` : ""}
-    ${!hasContent(node) ? `<div class="empty-note"><p>No individual document has been added for this person yet.</p>${node.children.length ? "<p>Their family members appear beneath this branch in the tree.</p>" : ""}</div>` : ""}
+    ${!hasContent(node) ? `<div class="empty-note"><p>No individual document has been added for this person yet.</p>${visibleChildren(node).length ? "<p>Their family members appear beneath this branch in the tree.</p>" : ""}</div>` : ""}
   </article>`;
 }
 
