@@ -142,7 +142,7 @@ function bindEvents() {
   });
 }
 
-fetch("family-data.json")
+fetch("family-data.json?version=20260728-2")
   .then((response) => {
     if (!response.ok) throw new Error("Family data could not be loaded.");
     return response.json();
