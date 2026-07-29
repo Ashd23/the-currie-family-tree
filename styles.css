@@ -645,6 +645,128 @@ footer p {
   }
 }
 
+/* Sibling branches for the earlier generations */
+.earlier-generations {
+  padding: 76px max(20px, calc((100% - 1380px) / 2)) 82px;
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(178, 139, 69, 0.11),
+      transparent 25rem
+    ),
+    #f2eadc;
+  border-top: 1px solid #d5c6ad;
+}
+.generation-tree-stack {
+  display: grid;
+  gap: 42px;
+}
+.generation-family-tree {
+  background: #fffdf8;
+  border: 1px solid #cdbd9f;
+  box-shadow: 0 14px 34px rgba(20, 37, 60, 0.09);
+  padding: 26px;
+  overflow-x: auto;
+}
+.generation-family-tree .labeled-person {
+  color: var(--ink);
+  background: #fff;
+  border-color: #d4c7b1;
+}
+.generation-family-tree .labeled-person:hover,
+.generation-family-tree .labeled-person:focus-visible {
+  background: #f6efe2;
+}
+.generation-family-tree .labeled-person small {
+  color: #8b672c;
+}
+.generation-root {
+  width: min(430px, 100%);
+  margin: 0 auto;
+  padding-bottom: 42px;
+  position: relative;
+}
+.generation-root:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 2px;
+  height: 42px;
+  background: var(--gold);
+}
+.generation-children {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: max-content;
+  padding: 30px 8px 6px;
+  position: relative;
+}
+.generation-children:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 118px;
+  right: 118px;
+  height: 2px;
+  background: var(--gold);
+}
+.generation-child-branch {
+  width: 230px;
+  position: relative;
+}
+.generation-child-branch:before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 2px;
+  height: 30px;
+  background: var(--gold);
+}
+.generation-grandchildren {
+  display: grid;
+  gap: 8px;
+  margin: 28px 0 0 15px;
+  padding-left: 17px;
+  border-left: 2px solid var(--gold);
+}
+.generation-grandchildren .labeled-person {
+  position: relative;
+}
+.generation-grandchildren .labeled-person:before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 18px;
+  height: 2px;
+  background: var(--gold);
+}
+.continues-label {
+  margin-top: 18px;
+  padding: 8px 10px;
+  border: 1px dashed #b79250;
+  background: #faf3e5;
+  color: #795c2e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .earlier-generations {
+    padding: 58px 10px 62px;
+  }
+  .generation-family-tree {
+    padding: 18px 12px;
+  }
+  .generation-children {
+    justify-content: flex-start;
+  }
+}
+
 /* Family album visual story */
 .hero {
   min-height: 540px;

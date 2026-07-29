@@ -143,10 +143,59 @@ function lineageTreeHtml() {
 function labeledPersonHtml(prefix, relationship) {
   const node = findNode(prefix);
   if (!node) return "";
+  return labeledNodeHtml(node, relationship);
+}
+
+function labeledNodeHtml(node, relationship) {
   return `<button class="labeled-person" data-person="${escapeHtml(node.id)}">
     ${portraitHtml(node, "small")}
     <span><small>${escapeHtml(relationship)}</small><strong>${escapeHtml(shortName(node))}</strong></span>
   </button>`;
+}
+
+function earlierGenerationsHtml() {
+  const families = [
+    findNode("Archibald Clayton Currie"),
+    findNode("James Wiley Currie"),
+    findNode("John Robert Currie"),
+  ].filter(Boolean);
+  return `<section class="earlier-generations" aria-labelledby="earlier-title">
+    <div class="section-heading">
+      <p class="eyebrow">The wider Currie family</p>
+      <h2 id="earlier-title">Children and sibling branches</h2>
+      <p>Each generation shows the couple's children. Children of the direct-line siblings are shown beneath their own parents.</p>
+    </div>
+    <div class="generation-tree-stack">${families
+      .map((family) => {
+        const children = visibleChildren(family);
+        return `<article class="generation-family-tree">
+          <div class="generation-root">${labeledNodeHtml(family, "Parents")}</div>
+          <div class="generation-children">${children
+            .map((child) => {
+              const nextGeneration = isDirect(child);
+              const grandchildren = nextGeneration
+                ? []
+                : visibleChildren(child);
+              return `<div class="generation-child-branch">
+                ${labeledNodeHtml(child, "Child")}
+                ${
+                  nextGeneration
+                    ? `<div class="continues-label">Direct family line continues below</div>`
+                    : grandchildren.length
+                      ? `<div class="generation-grandchildren">${grandchildren
+                          .map((grandchild) =>
+                            labeledNodeHtml(grandchild, "Their child"),
+                          )
+                          .join("")}</div>`
+                      : `<div class="no-descendants">No children listed</div>`
+                }
+              </div>`;
+            })
+            .join("")}</div>
+        </article>`;
+      })
+      .join("")}</div>
+  </section>`;
 }
 
 function familyBranchesHtml() {
@@ -389,6 +438,7 @@ function render() {
       <div class="hero-flourish" aria-hidden="true"><span></span><b>1730s</b><span></span><b>Today</b><span></span></div>
     </div></header>
     ${lineageTreeHtml()}
+    ${earlierGenerationsHtml()}
     ${familyBranchesHtml()}
     <div class="search-band"><div class="search-wrap">
       <label for="family-search">Find someone in the family</label>
