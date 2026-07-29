@@ -82,6 +82,18 @@ function noteHtml(note) {
   }</section>`;
 }
 
+function relationshipHtml(node) {
+  if (!node.path) return "";
+  const generations = node.path.split("\\").slice(0, -1).filter((name) => !name.endsWith("Historical Documents"));
+  const parentFamily = generations.at(-1);
+  const previousGeneration = generations.at(-2);
+  if (!parentFamily) return "";
+  return `<div class="relationship-path">
+    <p><strong>Parent family:</strong> ${escapeHtml(parentFamily)}</p>
+    ${previousGeneration ? `<p><strong>Previous generation:</strong> ${escapeHtml(previousGeneration)}</p>` : ""}
+  </div>`;
+}
+
 function detailHtml(node) {
   const files = associatedFiles(node);
   const notes = researchNotes(node);
@@ -90,7 +102,7 @@ function detailHtml(node) {
   return `<article class="detail-card">
     <div class="eyebrow">${isDirect(node) ? "Direct Currie line" : "Family branch"}</div>
     <h2>${escapeHtml(node.name)}</h2>
-    ${node.path ? `<p class="relationship-path">${escapeHtml(node.path.split("\\").slice(-3, -1).join("  ›  "))}</p>` : ""}
+    ${relationshipHtml(node)}
     ${notes.map(noteHtml).join("")}
     ${images.length ? `<section><h3>Documents & photographs</h3><div class="document-grid">${
       images.map((file) => `<a class="document" href="${escapeHtml(assetUrl(file.url))}" target="_blank" rel="noreferrer">
