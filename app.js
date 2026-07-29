@@ -158,7 +158,7 @@ function familyBranchesHtml() {
     ["Jaime Lee Currie", "Daughter"],
     ["Lonnie Jean Currie", "Son"],
     ["Robert Shawn Currie", "Son"],
-    ["Scotty Currie", "Son"],
+    ["Scotty Ray Currie", "Son"],
   ];
   const branches = [
     {
@@ -484,7 +484,7 @@ function bindEvents() {
   });
 }
 
-fetch("family-data.json?version=20260728-2")
+fetch("family-data.json?version=20260728-3")
   .then((response) => {
     if (!response.ok) throw new Error("Family data could not be loaded.");
     return response.json();
