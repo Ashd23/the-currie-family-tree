@@ -123,7 +123,7 @@ function lineageTreeHtml() {
           ${portraitHtml(node, index === 0 || index === nodes.length - 1 ? "accent" : "normal")}
           <span class="generation-label">${index === 0 ? "Earliest researched" : `Generation ${index + 1}`}</span>
           <strong>${escapeHtml(shortName(node))}</strong>
-          <small>Open family details</small>
+          <small>Open documents and details</small>
         </button>
         ${index < nodes.length - 1 ? `<span class="lineage-connector"><i></i><b>${relationshipToNext[index]}</b><i></i></span>` : ""}
       </div>`,
@@ -250,14 +250,15 @@ function familyBranchesHtml() {
       <p>Their children, grandchildren, and great-grandchildren are shown together. Select any name to open that person's place in the archive.</p>
     </div>
     <div class="family-couple">
-      <button data-person="${escapeHtml(bobbyShirley.id)}">${portraitHtml(bobbyShirley, "large")}<strong>${escapeHtml(shortName(bobbyShirley))}</strong><small>Parents of the six children below</small></button>
+      <button data-person="${escapeHtml(bobbyShirley.id)}">${portraitHtml(bobbyShirley, "large")}<strong>${escapeHtml(shortName(bobbyShirley))}</strong><small>Parents of the six children below</small><span class="document-cta">Open family documents</span></button>
     </div>
     <h3 class="level-title">Their children</h3>
     <div class="children-level">${children.map(([name, relationship]) => labeledPersonHtml(name, relationship)).join("")}</div>
     <div class="branch-groups">${branches
-      .map(
-        (branch) => `<article class="branch-group">
-          <h3>${escapeHtml(branch.title)}</h3>
+      .map((branch) => {
+        const branchRoot = findNode(branch.root[0]);
+        return `<article class="branch-group">
+          <div class="branch-title-row"><h3>${escapeHtml(branch.title)}</h3>${branchRoot ? `<button class="family-documents-button" data-person="${escapeHtml(branchRoot.id)}">Open family documents</button>` : ""}</div>
           <div class="branch-root">${labeledPersonHtml(...branch.root)}</div>
           <div class="branch-family-row">${branch.families
             .map(
@@ -275,8 +276,8 @@ function familyBranchesHtml() {
               </div>`,
             )
             .join("")}</div>
-        </article>`,
-      )
+        </article>`;
+      })
       .join("")}</div>
   </section>`;
 }
@@ -413,7 +414,9 @@ function choose(id) {
   document.querySelector("#tree-panel").classList.remove("open");
   document.querySelector("#mobile-tree-button").textContent =
     "Browse family branches";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  document
+    .querySelector("#details")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function bindEvents() {
