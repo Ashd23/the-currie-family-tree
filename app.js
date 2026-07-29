@@ -102,6 +102,13 @@ function portraitHtml(node, size = "normal") {
 
 function lineageTreeHtml() {
   const nodes = directLine.map(findNode).filter(Boolean);
+  const relationshipToNext = [
+    "Their son",
+    "Their son",
+    "Their son",
+    "Their son",
+    "His daughter",
+  ];
   return `<section class="family-showcase" aria-labelledby="lineage-title">
     <div class="section-heading">
       <p class="eyebrow">Six generations</p>
@@ -118,28 +125,124 @@ function lineageTreeHtml() {
           <strong>${escapeHtml(shortName(node))}</strong>
           <small>Open family details</small>
         </button>
-        ${index < nodes.length - 1 ? `<span class="lineage-connector" aria-hidden="true"><i></i></span>` : ""}
+        ${index < nodes.length - 1 ? `<span class="lineage-connector"><i></i><b>${relationshipToNext[index]}</b><i></i></span>` : ""}
       </div>`,
       )
       .join("")}</div>
   </section>`;
 }
 
-function descendantCardHtml(node, depth = 0) {
-  const children = visibleChildren(node);
-  return `<div class="descendant-unit depth-${depth}">
-    <button class="descendant-card" data-person="${escapeHtml(node.id)}">
-      ${portraitHtml(node, depth === 0 ? "accent" : "small")}
-      <span><strong>${escapeHtml(shortName(node))}</strong>${children.length ? `<small>${children.length} family branch${children.length === 1 ? "" : "es"}</small>` : "<small>Family member</small>"}</span>
-    </button>
-    ${children.length && depth < 3 ? `<div class="descendant-children">${children.map((child) => descendantCardHtml(child, depth + 1)).join("")}</div>` : ""}
-  </div>`;
+function labeledPersonHtml(prefix, relationship) {
+  const node = findNode(prefix);
+  if (!node) return "";
+  return `<button class="labeled-person" data-person="${escapeHtml(node.id)}">
+    ${portraitHtml(node, "small")}
+    <span><small>${escapeHtml(relationship)}</small><strong>${escapeHtml(shortName(node))}</strong></span>
+  </button>`;
 }
 
 function familyBranchesHtml() {
   const bobbyShirley = findNode("Bobby Jean Currie (1938-2014)");
   if (!bobbyShirley) return "";
-  const children = visibleChildren(bobbyShirley);
+  const children = [
+    ["Bobby J Currie", "Son"],
+    ["Christopher Leon Currie", "Son"],
+    ["Jaime Lee Currie", "Daughter"],
+    ["Lonnie Jean Currie", "Son"],
+    ["Robert Shawn Currie", "Son"],
+    ["Scotty Currie", "Son"],
+  ];
+  const branches = [
+    {
+      title: "Bobby J Currie's family",
+      root: ["Bobby J Currie", "Son of Bobby Jean and Shirley"],
+      families: [
+        {
+          parent: ["Chastin Currie Aldrich", "Daughter"],
+          children: [
+            ["Liam Aldrich", "Son"],
+            ["Brayla Aldrich", "Daughter"],
+            ["Waylon Aldrich", "Son"],
+          ],
+        },
+        {
+          parent: ["Amanda Marie Currie Gay", "Daughter"],
+          children: [
+            ["Lyndsay Gay", "Daughter"],
+            ["Kyle Gay", "Son"],
+          ],
+        },
+        {
+          parent: ["Gabrielle Currie", "Daughter"],
+          children: [["Hanna Fajikus", "Daughter"]],
+        },
+        {
+          parent: ["Benjamin Jacob Currie", "Son"],
+          children: [["Creed Currie", "Son"]],
+        },
+        {
+          parent: ["Jonathan Currie", "Son"],
+          children: [
+            ["Grayson Currie", "Son with Gracie"],
+            ["Weston Currie", "Son with Gracie"],
+            ["Koda Currie", "Son with Gracie"],
+            ["Noah Currie", "Son with Gracie"],
+          ],
+        },
+      ],
+    },
+    {
+      title: "Christopher Leon Currie's family",
+      root: ["Christopher Leon Currie", "Son of Bobby Jean and Shirley"],
+      families: [
+        {
+          parent: ["Ashley Danielle Currie", "Daughter"],
+          children: [
+            ["Colton Anthony Jordan", "Son"],
+            ["Madliynn Elizabeth Jordan", "Daughter"],
+            ["Brooklyn Avery Van", "Daughter"],
+          ],
+        },
+        {
+          parent: ["Christina Michelle Currie", "Daughter"],
+          children: [
+            ["Ayden Gabriel Mitchell", "Son"],
+            ["Daymein Xavier Cole Mitchell", "Son"],
+            ["Lyla Mae Currie", "Daughter"],
+            ["Cooper Staipe England", "Son"],
+            ["Ronin Omero England", "Son"],
+          ],
+        },
+        {
+          parent: ["Christopher Aaron Currie", "Son"],
+          children: [
+            ["Georgiana Rose Currie", "Daughter"],
+            ["Christopher Giovanni Currie", "Son"],
+            ["Graham Nicolas Currie", "Son"],
+          ],
+        },
+      ],
+    },
+    {
+      title: "Robert Shawn Currie's family",
+      root: ["Robert Shawn Currie", "Son of Bobby Jean and Shirley"],
+      families: [
+        {
+          parent: ["Brittnee Currie", "Daughter"],
+          children: [["Miguel (born", "Son"]],
+        },
+        { parent: ["Alisha Currie", "Daughter"], children: [] },
+        {
+          parent: ["Shawnna Currie", "Daughter"],
+          children: [["Reagan Ruiz", "Daughter"]],
+        },
+        {
+          parent: ["Emily Currie", "Daughter"],
+          children: [["Nico Fields", "Son"]],
+        },
+      ],
+    },
+  ];
   return `<section class="branch-showcase" aria-labelledby="branches-title">
     <div class="section-heading light">
       <p class="eyebrow">A growing family</p>
@@ -147,9 +250,34 @@ function familyBranchesHtml() {
       <p>Their children, grandchildren, and great-grandchildren are shown together. Select any name to open that person's place in the archive.</p>
     </div>
     <div class="family-couple">
-      <button data-person="${escapeHtml(bobbyShirley.id)}">${portraitHtml(bobbyShirley, "large")}<strong>${escapeHtml(shortName(bobbyShirley))}</strong><small>Family roots</small></button>
+      <button data-person="${escapeHtml(bobbyShirley.id)}">${portraitHtml(bobbyShirley, "large")}<strong>${escapeHtml(shortName(bobbyShirley))}</strong><small>Parents of the six children below</small></button>
     </div>
-    <div class="sibling-branches">${children.map((child) => descendantCardHtml(child)).join("")}</div>
+    <h3 class="level-title">Their children</h3>
+    <div class="children-level">${children.map(([name, relationship]) => labeledPersonHtml(name, relationship)).join("")}</div>
+    <div class="branch-groups">${branches
+      .map(
+        (branch) => `<article class="branch-group">
+          <h3>${escapeHtml(branch.title)}</h3>
+          <div class="branch-root">${labeledPersonHtml(...branch.root)}</div>
+          <div class="branch-family-row">${branch.families
+            .map(
+              (family) => `<div class="parent-branch">
+                ${labeledPersonHtml(...family.parent)}
+                ${
+                  family.children.length
+                    ? `<div class="child-twigs">${family.children
+                        .map(([name, relationship]) =>
+                          labeledPersonHtml(name, relationship),
+                        )
+                        .join("")}</div>`
+                    : `<div class="no-descendants">No children listed</div>`
+                }
+              </div>`,
+            )
+            .join("")}</div>
+        </article>`,
+      )
+      .join("")}</div>
   </section>`;
 }
 
