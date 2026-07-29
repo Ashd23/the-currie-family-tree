@@ -23,8 +23,11 @@ const flatten = (node) => [node, ...node.children.flatMap(flatten)];
 const isDirect = (node) =>
   directLine.some((name) => node.name.startsWith(name));
 const isDocumentFolder = (node) => node.name.endsWith("Historical Documents");
+const isNonFamilyPartner = (node) => node.name.startsWith("Boyfriend - ");
 const visibleChildren = (node) =>
-  node.children.filter((child) => !isDocumentFolder(child));
+  node.children.filter(
+    (child) => !isDocumentFolder(child) && !isNonFamilyPartner(child),
+  );
 const associatedFiles = (node) => {
   const files = [
     ...node.files,
@@ -534,7 +537,7 @@ function bindEvents() {
   });
 }
 
-fetch("family-data.json?version=20260728-3")
+fetch("family-data.json?version=20260728-4")
   .then((response) => {
     if (!response.ok) throw new Error("Family data could not be loaded.");
     return response.json();
